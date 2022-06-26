@@ -3,6 +3,7 @@ package WebToyProject1.webService.web.controller;
 import WebToyProject1.webService.domain.login.LoginService;
 import WebToyProject1.webService.domain.member.Member;
 import WebToyProject1.webService.web.form.LoginForm;
+import WebToyProject1.webService.web.session.LoginConst;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Controller;
@@ -12,7 +13,9 @@ import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PostMapping;
 
 import javax.servlet.http.Cookie;
+import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import javax.servlet.http.HttpSession;
 import javax.validation.Valid;
 
 @Slf4j
@@ -28,7 +31,7 @@ public class LoginController {
     }
 
     @PostMapping("/login")
-    public String login(@Valid @ModelAttribute("loginForm") LoginForm loginForm, BindingResult bindingResult, HttpServletResponse response) {
+    public String login(@Valid @ModelAttribute("loginForm") LoginForm loginForm, BindingResult bindingResult, HttpServletRequest request) {
         if (bindingResult.hasErrors()) {
             return "login/loginForm";
         }
@@ -40,17 +43,20 @@ public class LoginController {
             return "login/loginForm";
         }
 
-        // 로그인에 성공하면 쿠키를 부여하고, 새로운 화면으로 넘어가게 해주자.
-        Cookie cookie = new Cookie("memberId", String.valueOf(member.getId()));
-        response.addCookie(cookie);
+        // 세션 생성
+        HttpSession session = request.getSession();
+        // 세션에 로그인 회원 정보 보관.
+        session.setAttribute(LoginConst.LOGIN_MEMBER, member);  // 지정된 이름으로 세션에 object를 binding.
 
         return "redirect:/";
     }
 
     @PostMapping("/logout")
-    public String logout(HttpServletResponse response) {
-        expireCookie(response, "memberId");
-
+    public String logout(HttpServletRequest request) {
+        HttpSession session = request.getSession(false);
+        if (session != null) {
+            session.invalidate();
+        }
         return "redirect:/";
     }
 

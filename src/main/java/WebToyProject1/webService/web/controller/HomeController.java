@@ -2,13 +2,14 @@ package WebToyProject1.webService.web.controller;
 
 import WebToyProject1.webService.domain.member.Member;
 import WebToyProject1.webService.domain.repository.MemberRepository;
+import WebToyProject1.webService.web.session.LoginConst;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
-import org.springframework.web.bind.annotation.CookieValue;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.SessionAttribute;
 
 @Slf4j
 @Controller
@@ -25,17 +26,13 @@ public class HomeController {
     }
 
     @GetMapping
-    public String loginHome(@CookieValue(name = "memberId", required = false) Long memberId, Model model) {
-        if (memberId == null) {
+    public String loginHome(
+            @SessionAttribute(name = LoginConst.LOGIN_MEMBER, required = false) Member loginMember, Model model) {
+        if (loginMember == null) {
             return "home";
         }
 
-        Member findMember = memberRepository.findById(memberId);
-        if (findMember == null) {
-            return "home";
-        }
-
-        model.addAttribute("member", findMember);
+        model.addAttribute("member", loginMember);
         return "loginHome";
     }
 }
