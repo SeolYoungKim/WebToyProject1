@@ -26,7 +26,7 @@ public class HomeController {
     }
 
     @GetMapping
-    public String loginHome(
+    public String loginHome(  // 얘는 세션에 왜 접근을 하느냐? 로그인 사용자에게 화면 따로 띄워주려고 그런다..!
             @SessionAttribute(name = LoginConst.LOGIN_MEMBER, required = false) Member loginMember, Model model) {
         if (loginMember == null) {
             return "home";

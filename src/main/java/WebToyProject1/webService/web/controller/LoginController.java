@@ -11,6 +11,7 @@ import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 
 import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletRequest;
@@ -31,7 +32,11 @@ public class LoginController {
     }
 
     @PostMapping("/login")
-    public String login(@Valid @ModelAttribute("loginForm") LoginForm loginForm, BindingResult bindingResult, HttpServletRequest request) {
+    public String login(@Valid @ModelAttribute("loginForm") LoginForm loginForm, BindingResult bindingResult,
+                        @RequestParam(defaultValue = "/") String redirectTo,
+                        HttpServletRequest request) {
+        log.info("error={}", bindingResult);
+
         if (bindingResult.hasErrors()) {
             return "login/loginForm";
         }
@@ -48,7 +53,7 @@ public class LoginController {
         // 세션에 로그인 회원 정보 보관.
         session.setAttribute(LoginConst.LOGIN_MEMBER, member);  // 지정된 이름으로 세션에 object를 binding.
 
-        return "redirect:/";
+        return "redirect:" + redirectTo;  // 요청 파라미터가 있으면 해당 uri로 이동하고, 없으면 기본 uri(홈)
     }
 
     @PostMapping("/logout")
