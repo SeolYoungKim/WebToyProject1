@@ -25,7 +25,7 @@ public class LoginArgumentResolver implements HandlerMethodArgumentResolver {
     public Object resolveArgument(MethodParameter parameter, ModelAndViewContainer mavContainer, NativeWebRequest webRequest, WebDataBinderFactory binderFactory) throws Exception {
 
         // session이 할당되었는지 여부를 조사하여, 로그인 여부를 확인한다 -> 로그인 화면 페이지 송출
-        HttpServletRequest request = (HttpServletRequest) webRequest;
+        HttpServletRequest request = (HttpServletRequest) webRequest.getNativeRequest();
         HttpSession session = request.getSession(false);
 
         if (session == null) {
